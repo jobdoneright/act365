@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "act365"
 version = "0.1.0"
-description = "Python Client for https://act365api.docs.apiary.io/"
+description = "Python Client for [ACT365](https://www.act365.eu/)
 authors = ["Simon McCartney <simon@mccartney.ie>"]
 readme = "README.md"
 packages = [{include = "act365", from = "src"}]

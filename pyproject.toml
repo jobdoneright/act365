@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "act365"
 version = "1.0.2"
-description = "Python Client for [ACT365](https://www.act365.eu/)"
+description = "Python Client for ACT365"
 authors = ["Simon McCartney <simon@mccartney.ie>"]
 readme = "README.md"
 packages = [{include = "act365", from = "src"}]

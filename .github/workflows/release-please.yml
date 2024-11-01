@@ -19,5 +19,5 @@ jobs:
           # (PAT) and configured it as a GitHub action secret named
           # `RELEASE_PLEASE_TOKEN` (this secret name is not important).
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          # will this update pyproject.toml?
+          # this will this update pyproject.toml
           release-type: python

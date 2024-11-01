@@ -18,6 +18,8 @@ json5 = "0.9.25"
 pytest = "^8.3.1"
 pytest-httpx = "^0.30.0"
 httpx = {extras = ["cli"], version = "^0.27.0"}
+flake8 = "^7.1.1"
+isort = "^5.13.2"
 
 [build-system]
 requires = ["poetry-core"]

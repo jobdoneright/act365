@@ -9,7 +9,7 @@ LOG = logging.getLogger("act635")
 class Act365Auth(httpx.Auth):
     requires_response_body = True
 
-    def __init__(self, username, password, grant_type="password", url="https://userapi.act365.eu/api/account/login"):
+    def __init__(self, username, password, grant_type="password", url="https://userapi.act365.eu/api"):
         
         if username is None or password is None:
             raise Exception
@@ -22,13 +22,14 @@ class Act365Auth(httpx.Auth):
 
     def get_token(self):
         data = {
+            "grant_type": self.grant_type,
             "username": self.username,
-            "password": self.password,
-            "grant_type": self.grant_type
+            "password": self.password
         }
 
         while self.access_token is None:
-            response = httpx.post(self.url, data=data, timeout=90)
+            # Set Content-Type: application/x-www-form-urlencoded via headers as apiary complains about case mismatch
+            response = httpx.post(self.url+'/account/login', data=data, timeout=90, headers={"Content-Type": "application/x-www-form-urlencoded"})
             LOG.debug(f"Response: {response.status_code} {response.text}")
             LOG.info(f"Response Headers: {response.headers}")
 

@@ -12,6 +12,7 @@ act365cli = "act365.client:run"
 [tool.poetry.dependencies]
 python = "^3.12"
 httpx = "^0.27.0"
+json5 = "0.9.25"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.1"

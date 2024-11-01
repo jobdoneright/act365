@@ -1,48 +1,54 @@
-import httpx
 import os
-import pytest
-import json5
 from pprint import pprint as pp
+
+import httpx
+import json5
+import pytest
 
 from act365.client import Act365Auth
 
+
 def test_act65_auth_failures():
     try:
-        auth = Act365Auth(username=None, password=None)
+        _ = Act365Auth(username=None, password=None)
     except Exception as e:
-        assert type(e) == Exception
+        assert type(e) is Exception
 
     try:
-        auth = Act365Auth(username="bad", password="credenrials")
+        _ = Act365Auth(username="bad", password="credenrials")
     except Exception as e:
-        assert type(e) == Exception
+        assert type(e) is Exception
 
-@pytest.mark.skipif(os.getenv('ACT365_USERNAME') == None, reason="skip this test as ACT365_USERNAME is not set")
+
+@pytest.mark.skipif(
+    os.getenv("ACT365_USERNAME") is None,
+    reason="skip this test as ACT365_USERNAME is not set",
+)
 def test_act65_auth():
-    username = os.getenv('ACT365_USERNAME')
-    password = os.getenv('ACT365_PASSWORD')
+    username = os.getenv("ACT365_USERNAME")
+    password = os.getenv("ACT365_PASSWORD")
 
     url = "https://userapi.act365.eu/api"
 
     auth = Act365Auth(username=username, password=password)
     with httpx.Client(auth=auth) as client:
         print("Summary:")
-        response = client.get(url+"/summary")
+        response = client.get(url + "/summary")
         assert response.status_code == httpx.codes.OK
         print(pp(response.json()))
 
         print("Sites:")
-        response = client.get(url+"/sites")
+        response = client.get(url + "/sites")
         assert response.status_code == httpx.codes.OK
         print(pp(response.json()))
 
         print("Card Holders:")
-        response = client.get(url+"/cardholder")
+        response = client.get(url + "/cardholder")
         assert response.status_code == httpx.codes.OK
         print(pp(response.json()))
 
         print("Bookingsites:")
-        response = client.get(url+"/cardholder/22042028")
+        response = client.get(url + "/cardholder/22042028")
         assert response.status_code == httpx.codes.OK
         print(pp(response.json()))
 
@@ -57,9 +63,10 @@ def test_act65_auth_apiary():
     auth = Act365Auth(username=username, password=password, url=url)
     with httpx.Client(auth=auth) as client:
         print("Summary:")
-        response = client.get(url+"/summary")
+        response = client.get(url + "/summary")
         assert response.status_code == httpx.codes.OK
-        # use the json5 library to parse the response.text, as apiary has trailing commas
+        # use the json5 library to parse the response.text, as apiary
+        # responses have trailing commas
         summary = json5.loads(response.text)
         assert summary.get("ServiceUserType") == "Installer"
         assert isinstance(summary.get("MusteredCardHolders"), list)

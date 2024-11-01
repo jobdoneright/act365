@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/jobdoneright/act365/compare/v1.0.1...v1.0.2) (2024-11-01)
+
+
+### Bug Fixes
+
+* **pyproject.yaml:** Update pyproject version ([5f4ba9f](https://github.com/jobdoneright/act365/commit/5f4ba9f611bfde7ca69adaf7373533bae5944fc2))
+
 ## [1.0.1](https://github.com/jobdoneright/act365/compare/v1.0.0...v1.0.1) (2024-11-01)
 
 

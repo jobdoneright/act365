@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/jobdoneright/act365/compare/v1.0.2...v1.0.3) (2024-11-02)
+
+
+### Bug Fixes
+
+* **pypi:** 94th attempt at fixing gha based publishing ([026bd78](https://github.com/jobdoneright/act365/commit/026bd783309717792c22ae74cd191fff416df37c))
+
 ## [1.0.2](https://github.com/jobdoneright/act365/compare/v1.0.1...v1.0.2) (2024-11-01)
 
 

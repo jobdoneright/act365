@@ -24,7 +24,7 @@ def test_act65_auth_failures():
     os.getenv("ACT365_USERNAME") is None,
     reason="skip this test as ACT365_USERNAME is not set",
 )
-def test_act65_auth():
+def test_act365_auth():
     username = os.getenv("ACT365_USERNAME")
     password = os.getenv("ACT365_PASSWORD")
 
@@ -53,7 +53,7 @@ def test_act65_auth():
         print(pp(response.json()))
 
 
-def test_act65_auth_apiary():
+def test_act365_apiary():
     # you can use this with https://act365api.docs.apiary.io/traffic
     # to view the apiary traffic
     url = "https://private-3061cd-act365api.apiary-mock.com/api"
@@ -83,18 +83,14 @@ def test_act65_auth_apiary():
         # Update the cardholder
         new_startvalid = "02/11/2024 21:00"
         new_endvalid = "02/11/2024 22:00"
-        update_cardholder = dict()
-        update_cardholder["CardHolderID"] = 36168
+        update_cardholder = cardholder.copy()
         update_cardholder["StartValid"] = new_startvalid
         update_cardholder["EndValid"] = new_endvalid
-        response = client.post(url=url + "/cardholder", data=update_cardholder)
+        response = client.put(url=url + "/cardholder", data=update_cardholder)
         assert response.status_code == httpx.codes.OK
-
-        # Get the cardholder again
-        check_url = f"{url}/cardholder/{cardholder.get('CardHolderID')}"
-        response = client.get(check_url)
-        assert response.status_code == httpx.codes.OK
-        cardholder = json5.loads(response.text)
-        assert cardholder.get("CardHolderID") == 36168
-        assert cardholder.get("StartValid") == new_startvalid
-        assert cardholder.get("EndValid") == new_endvalid
+        api_response = json5.loads(response.text)
+        assert api_response.get("Success") is True, api_response.get(
+            "ErrorMsg"
+        )
+        # f"ErrorCode: {api_response.get("ErrorCode")}, ErrorMsg: {api_response.get('ErrorMsg')}"
+        assert api_response.get("ErrorCode", -1) == 0

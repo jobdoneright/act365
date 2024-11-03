@@ -70,3 +70,31 @@ def test_act65_auth_apiary():
         summary = json5.loads(response.text)
         assert summary.get("ServiceUserType") == "Installer"
         assert isinstance(summary.get("MusteredCardHolders"), list)
+
+        params = {"siteid": "8539", "searchString": "Simon McCartney"}
+        response = client.get(url + "/cardholder", params=params)
+
+        assert response.status_code == httpx.codes.OK
+        cardholders = json5.loads(response.text)
+        assert isinstance(cardholders, list)
+        assert len(cardholders) == 1
+        cardholder = cardholders[0]
+
+        # Update the cardholder
+        new_startvalid = "02/11/2024 21:00"
+        new_endvalid = "02/11/2024 22:00"
+        update_cardholder = dict()
+        update_cardholder["CardHolderID"] = 36168
+        update_cardholder["StartValid"] = new_startvalid
+        update_cardholder["EndValid"] = new_endvalid
+        response = client.post(url=url + "/cardholder", data=update_cardholder)
+        assert response.status_code == httpx.codes.OK
+
+        # Get the cardholder again
+        check_url = f"{url}/cardholder/{cardholder.get('CardHolderID')}"
+        response = client.get(check_url)
+        assert response.status_code == httpx.codes.OK
+        cardholder = json5.loads(response.text)
+        assert cardholder.get("CardHolderID") == 36168
+        assert cardholder.get("StartValid") == new_startvalid
+        assert cardholder.get("EndValid") == new_endvalid

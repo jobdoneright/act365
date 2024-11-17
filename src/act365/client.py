@@ -3,7 +3,13 @@ from time import sleep
 
 import httpx
 
-logging.basicConfig(filename="act365.log", filemode="w", level=logging.INFO)
+# logging.basicConfig(filename="act365.log", filemode="w", level=logging.INFO)
+
+logging.basicConfig(
+    format="%(levelname)s [%(asctime)s] %(name)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=logging.DEBUG,
+)
 LOG = logging.getLogger("act635")
 
 

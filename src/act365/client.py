@@ -2,6 +2,9 @@ import logging
 from time import sleep
 
 import httpx
+import json5
+
+from act365.cardholder import CardHolder
 
 # logging.basicConfig(filename="act365.log", filemode="w", level=logging.INFO)
 
@@ -11,6 +14,43 @@ logging.basicConfig(
     level=logging.DEBUG,
 )
 LOG = logging.getLogger("act635")
+
+
+class Act365Client:
+    def __init__(
+        self, username, password, siteid, url="https://userapi.act365.eu/api"
+    ):
+        self.username = username
+        self.password = password
+        self.siteid = siteid
+        self.url = url
+
+        self.auth = Act365Auth(username, password, url=url)
+        self.client = httpx.Client(auth=self.auth)
+
+        self._CardHolders = list()
+
+    def getCardholders(self):
+        response = self.client.get(self.url + "/cardholder")
+        if response.status_code == httpx.codes.OK:
+            cardholders = json5.loads(response.text)
+            for ch in cardholders:
+                self._CardHolders.append(CardHolder(ch))
+
+    def getCardholderByEmail(self, email):
+        self.getCardholders()
+        for ch in self._CardHolders:
+            if ch.Email.lower() == email.lower():
+                return ch
+
+    def post(self, url, data):
+        return self.client.post(url, data=data)
+
+    def put(self, url, data):
+        return self.client.put(url, data=data)
+
+    def delete(self, url):
+        return self.client.delete(url)
 
 
 class Act365Auth(httpx.Auth):

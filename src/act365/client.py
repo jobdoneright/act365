@@ -1,8 +1,8 @@
+import json
 import logging
 from time import sleep
 
 import httpx
-import json5
 
 from act365.cardholder import CardHolder
 
@@ -30,17 +30,49 @@ class Act365Client:
 
         self._CardHolders = list()
 
-    def getCardholders(self):
-        response = self.client.get(self.url + "/cardholder")
-        if response.status_code == httpx.codes.OK:
-            cardholders = json5.loads(response.text)
-            for ch in cardholders:
-                self._CardHolders.append(CardHolder(ch))
+    def getCardholders(self, params={}):
+        # ?customerid={customerid}
+        # &siteid={siteid}
+        # &maxlimit={maxlimit}
+        # &skipover={skipover}
+        # &enabled={enabled}
+        # &externalId=externalid
+        # &searchString={searchstring}'
+        # params["siteid"] = self.siteid
+        # lowercase all keys
+        params = {k.lower(): v for k, v in params.items()}
+
+        self._CardHolders = list()
+
+        more_to_get = True
+        while more_to_get:
+            params["skipover"] = len(self._CardHolders)
+            response = self.client.get(self.url + "/cardholder", params=params)
+
+            if response.status_code == httpx.codes.OK:
+                cardholders = json.loads(response.text)
+
+                if len(cardholders) == 0:
+                    more_to_get = False
+
+                for ch in cardholders:
+                    self._CardHolders.append(CardHolder(ch))
+
+            else:
+                more_to_get = False
+
+        return self._CardHolders
 
     def getCardholderByEmail(self, email):
         self.getCardholders()
         for ch in self._CardHolders:
             if ch.Email.lower() == email.lower():
+                return ch
+
+    def getCardholderById(self, id):
+        self.getCardholders()
+        for ch in self._CardHolders:
+            if ch.CardHolderID == id:
                 return ch
 
     def post(self, url, data):

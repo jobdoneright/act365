@@ -5,7 +5,7 @@ me = {
     "CustomerID": 5622,
     "SiteID": 8539,
     "Forename": "Simon",
-    "Surname": "McCartney ",
+    "Surname": "McCartney",
     "Enabled": True,
     "StartValid": "03/11/2024 02: 00",
     "EndValid": "03/11/2024 03: 00",
@@ -76,7 +76,7 @@ class CardHolder(object):
 
     @StartValid.setter
     def StartValid(self, value: str | None):
-        if value is None:
+        if value is None or value == "":
             self._StartValid_dt = value
         else:
             self._StartValid_dt = datetime.datetime.strptime(
@@ -92,7 +92,7 @@ class CardHolder(object):
 
     @EndValid.setter
     def EndValid(self, value: str | None):
-        if value is None:
+        if value is None or value == "":
             self._EndValid_dt = value
         else:
             self._EndValid_dt = datetime.datetime.strptime(

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/jobdoneright/act365/compare/v1.0.3...v1.1.0) (2024-11-28)
+
+
+### Features
+
+* **cardholder:** Add the CardHolder object ([9e1942e](https://github.com/jobdoneright/act365/commit/9e1942e42c1c65648ba3e4c202969992f323f0dc))
+* **cardholder:** Add the CardHolder object ([74a8c83](https://github.com/jobdoneright/act365/commit/74a8c83c8652326ddd008acccfd4973f12ba0c93))
+
 ## [1.0.3](https://github.com/jobdoneright/act365/compare/v1.0.2...v1.0.3) (2024-11-02)
 
 

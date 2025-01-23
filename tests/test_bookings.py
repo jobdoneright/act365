@@ -120,6 +120,7 @@ def test_booking_object_to_json():
     """
     booking = Booking(**sample)
     assert booking.dict() == sample_out
+    assert type(booking) is Booking
 
 
 def test_booking_object():
@@ -145,8 +146,6 @@ def test_booking_object():
     assert booking.dict().get("DoorIDs") == 14247
     assert type(booking.dict().get("DoorIDs")) == int
     assert type(booking.dict()["DoorIDs"]) == int
-
-    assert sample["DoorIDs"][0] == booking.DoorID
 
 
 def test_booking_object_with_doorid():

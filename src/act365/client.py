@@ -113,10 +113,15 @@ class Act365Client:
 
         return doors
 
-    def createBooking(self, booking: Booking):
-        response = self.client.post(
-            self.url + "/Bookings", data=booking.dict()
-        )
+    def createBooking(self, booking: Booking | dict):
+        if isinstance(booking, dict):
+            data = booking
+        elif isinstance(booking, Booking):
+            data = booking.dict()
+        else:
+            raise TypeError("booking must be a Booking object or a dictionary")
+
+        response = self.client.post(self.url + "/Bookings", data=data)
         return response
 
     def getBookings(self, siteid, datefrom=None):

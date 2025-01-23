@@ -63,7 +63,7 @@ class Booking:
 
     def __post_init__(self, DoorID):
         if len(self.DoorIDs) == 0 and DoorID is not None:
-            self.DoorIDs[0] = DoorID
+            self.DoorIDs.append(DoorID)
 
     # @property
     # def DoorID(self):

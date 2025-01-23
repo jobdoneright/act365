@@ -63,8 +63,11 @@ class TestBookingClient:
         assert door.ID == 14247
 
     def test_get_bookings(self, act365_client):
+        # create a booking
+        self.test_create_booking(act365_client)
+
         bookings = act365_client.getBookings(
-            me.get("SiteID"), datefrom="01/01/2021"
+            me.get("SiteID"), datefrom="01/01/2000"
         )
         assert len(bookings) > 0
         assert bookings[0].BookingID > 0

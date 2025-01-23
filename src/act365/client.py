@@ -1,9 +1,11 @@
 import json
 import logging
+from datetime import datetime
 from time import sleep
 
 import httpx
 
+from act365.booking import Booking, BookingDoor, BookingSite
 from act365.cardholder import CardHolder
 
 # logging.basicConfig(filename="act365.log", filemode="w", level=logging.INFO)
@@ -74,6 +76,89 @@ class Act365Client:
         for ch in self._CardHolders:
             if ch.CardHolderID == id:
                 return ch
+
+    def getBookingSites(self, maxlimit=100, skipover=0):
+        params = {"maxlimit": maxlimit, "skipover": skipover}
+
+        sites = list()
+
+        more_to_get = True
+        while more_to_get:
+            params["skipover"] = len(sites)
+            response = self.client.get(
+                self.url + "/Bookingsites", params=params
+            )
+
+            if response.status_code == httpx.codes.OK:
+                _sites = json.loads(response.text)
+
+                if len(_sites) == 0:
+                    more_to_get = False
+
+                for site in _sites:
+                    sites.append(BookingSite(**site))
+
+            else:
+                more_to_get = False
+
+        return sites
+
+    def getBookingSiteDoors(self, siteid):
+        response = self.client.get(
+            self.url + "/Bookingdoors", params={"siteid": siteid}
+        )
+
+        if response.status_code == httpx.codes.OK:
+            doors = [BookingDoor(**door) for door in json.loads(response.text)]
+
+        return doors
+
+    def createBooking(self, booking: Booking):
+        response = self.client.post(
+            self.url + "/Bookings", data=booking.dict()
+        )
+        return response
+
+    def getBookings(self, siteid, datefrom=None):
+        if datefrom is None:
+            datefrom = datetime.now().strftime("%d/%m/%Y")
+
+        params = {"siteid": siteid, "date": datefrom}
+        results = self._getAll("/getbookings", params=params)
+
+        bookings = [Booking(**booking) for booking in results]
+
+        return bookings
+
+    def deleteBooking(self, bookingid):
+        response = self.client.delete(
+            self.url + "2/Bookings", params={"bookingID": f"{bookingid}"}
+        )
+        return response
+
+    def _getAll(self, path, params={}, maxlimit=100):
+        params["maxlimit"] = maxlimit
+
+        results = list()
+
+        more_to_get = True
+        while more_to_get:
+            params["skipover"] = len(results)
+            response = self.client.get(self.url + path, params=params)
+
+            if response.status_code == httpx.codes.OK:
+                rs = json.loads(response.text)
+
+                if len(rs) == 0:
+                    more_to_get = False
+
+                for r in rs:
+                    results.append(r)
+
+            else:
+                more_to_get = False
+
+        return results
 
     def post(self, url, data):
         return self.client.post(url, data=data)

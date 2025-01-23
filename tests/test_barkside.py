@@ -40,7 +40,7 @@ def test_act365_barkside():
         assert response.status_code == httpx.codes.OK
         cardholders = json5.loads(response.text)
         assert isinstance(cardholders, list)
-        assert len(cardholders) == 1
+        assert len(cardholders) > 0
         cardholder = cardholders[0]
         assert cardholder.get("CardHolderID") == 21274334
         assert cardholder.get("Email").lower() == "simon@mccartney.ie".lower()

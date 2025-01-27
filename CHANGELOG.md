@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0](https://github.com/jobdoneright/act365/compare/v1.0.3...v1.1.0) (2025-01-27)
+
+
+### Features
+
+* Added Bookings API, reworked tests into Objects & Client ([37c53b5](https://github.com/jobdoneright/act365/commit/37c53b51961ed5c01ff90f1904a6781fe3bd15e3))
+* Added Bookings API, reworked tests into Objects & Client ([91d1c43](https://github.com/jobdoneright/act365/commit/91d1c438e05687da77404a1534e9d0ae517bcdc5))
+* **cardholder:** Add the CardHolder object ([9e1942e](https://github.com/jobdoneright/act365/commit/9e1942e42c1c65648ba3e4c202969992f323f0dc))
+* **cardholder:** Add the CardHolder object ([74a8c83](https://github.com/jobdoneright/act365/commit/74a8c83c8652326ddd008acccfd4973f12ba0c93))
+
 ## [1.0.3](https://github.com/jobdoneright/act365/compare/v1.0.2...v1.0.3) (2024-11-02)
 
 

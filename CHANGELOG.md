@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/jobdoneright/act365/compare/v1.1.0...v1.1.1) (2025-01-28)
+
+
+### Bug Fixes
+
+* Use python-3.11, the default on render runtimes ([7100a00](https://github.com/jobdoneright/act365/commit/7100a00d9d7791dfb00ab61660e12f636605440e))
+
 ## [1.1.0](https://github.com/jobdoneright/act365/compare/v1.0.3...v1.1.0) (2025-01-27)
 
 

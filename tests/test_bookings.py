@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from act365.booking import Booking, BookingDoor
 
 me = {
@@ -146,6 +148,55 @@ def test_booking_object():
     assert booking.dict().get("DoorIDs") == 14247
     assert type(booking.dict().get("DoorIDs")) == int
     assert type(booking.dict()["DoorIDs"]) == int
+
+
+def test_booking_object_datetime():
+    d = sample.copy()
+    d["StartValidity"] = datetime.strptime(
+        d["StartValidity"], "%d/%m/%Y %H:%M"
+    )
+    d["EndValidity"] = datetime.strptime(d["EndValidity"], "%d/%m/%Y %H:%M")
+    booking = Booking(**d)
+    assert booking.Forename == "Simon"
+    assert booking.Surname == "McCartney"
+    assert booking.PIN == "0034"
+
+    # setter & getter should always return an API friendly format
+    assert booking.StartValidity == sample["StartValidity"]
+    assert booking.EndValidity == sample["EndValidity"]
+
+    booking.StartValidity = rt["StartValid"]
+    booking.EndValidity = rt["EndValid"]
+    assert booking.StartValidity == rt["StartValid"]
+    assert booking.EndValidity == rt["EndValid"]
+
+    booking.DoorIDs = [14247, 14248]
+    assert booking.DoorIDs == [14247, 14248]
+
+    # validate that DoorIDs is an int when there is only one door
+    booking.DoorIDs = [14247]
+    assert booking.dict().get("DoorIDs") == 14247
+    assert type(booking.dict().get("DoorIDs")) == int
+    assert type(booking.dict()["DoorIDs"]) == int
+
+
+def test_booking_object_baddate():
+    bad_dates = {
+        "SiteID": 8539,
+        "Forename": "Simon",
+        "Surname": "McCartney",
+        "PIN": "0034",
+        "Card": 0,
+        "StartValidity": "99/03/2016 16:45",
+        "EndValidity": "2016/01/01 18:00",
+        "ToggleMode": False,
+        "DoorIDs": [14247],
+    }
+    # the StartValidity date is invalid, and should throw a ValueError
+    try:
+        _ = Booking(**bad_dates)
+    except Exception as e:
+        assert type(e) is ValueError
 
 
 def test_booking_object_with_doorid():

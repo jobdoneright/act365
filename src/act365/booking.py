@@ -1,4 +1,5 @@
 from dataclasses import InitVar, asdict, dataclass, field
+from datetime import datetime
 from typing import List
 
 
@@ -50,8 +51,8 @@ class Booking:
     Forename: str
     Surname: str
     PIN: str
-    StartValidity: str
-    EndValidity: str
+    StartValidity: str | datetime
+    EndValidity: str | datetime
     Card: int = 0
     ToggleMode: bool = False
     DoorIDs: List[int] = field(default_factory=list)
@@ -64,6 +65,34 @@ class Booking:
     def __post_init__(self, DoorID):
         if len(self.DoorIDs) == 0 and DoorID is not None:
             self.DoorIDs.append(DoorID)
+
+    @property
+    def StartValidity(self):
+        if isinstance(self._StartValidity, datetime):
+            return self._StartValidity.strftime("%d/%m/%Y %H:%M")
+        else:
+            return self._StartValidity
+
+    @StartValidity.setter
+    def StartValidity(self, value):
+        if isinstance(value, datetime):
+            self._StartValidity = value
+        else:
+            self._StartValidity = datetime.strptime(value, "%d/%m/%Y %H:%M")
+
+    @property
+    def EndValidity(self):
+        if isinstance(self._EndValidity, datetime):
+            return self._EndValidity.strftime("%d/%m/%Y %H:%M")
+        else:
+            return self._EndValidity
+
+    @EndValidity.setter
+    def EndValidity(self, value):
+        if isinstance(value, datetime):
+            self._EndValidity = value
+        else:
+            self._EndValidity = datetime.strptime(value, "%d/%m/%Y %H:%M")
 
     # @property
     # def DoorID(self):
@@ -85,4 +114,5 @@ class Booking:
 
         if self.BookingCreatedTime is None:
             del d["BookingCreatedTime"]
+
         return d

@@ -8,7 +8,7 @@ import pytest
 from act365.client import Act365Auth
 
 
-def test_act65_auth_failures():
+def test_act365_auth_failures():
     try:
         _ = Act365Auth(username=None, password=None)
     except Exception as e:

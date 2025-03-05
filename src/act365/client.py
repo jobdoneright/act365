@@ -8,14 +8,12 @@ import httpx
 from act365.booking import Booking, BookingDoor, BookingSite
 from act365.cardholder import CardHolder
 
-# logging.basicConfig(filename="act365.log", filemode="w", level=logging.INFO)
-
 logging.basicConfig(
-    format="%(levelname)s [%(asctime)s] %(name)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)-5s %(module)-10s %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+    level=logging.ERROR,
 )
-LOG = logging.getLogger("act635")
+LOG = logging.getLogger(__name__)
 
 
 class Act365Client:

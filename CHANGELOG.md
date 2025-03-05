@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/jobdoneright/act365/compare/v1.1.2...v1.2.0) (2025-03-05)
+
+
+### Features
+
+* MVP CLI - bookings list & delete ([992eccc](https://github.com/jobdoneright/act365/commit/992eccc407240ba5e7a395fd223ba1c998f7c0aa))
+* MVP CLI - bookings list & delete ([e07eb6d](https://github.com/jobdoneright/act365/commit/e07eb6d17f8dd142c0824d9cc5157ec57b83366b))
+
 ## [1.1.2](https://github.com/jobdoneright/act365/compare/v1.1.1...v1.1.2) (2025-02-19)
 
 

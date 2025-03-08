@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/jobdoneright/act365/compare/v1.2.0...v1.2.1) (2025-03-08)
+
+
+### Bug Fixes
+
+* split the build & publish steps in .github/workflows/publish.yml ([de173cb](https://github.com/jobdoneright/act365/commit/de173cb28408a77ff1cc7484299419199092df14))
+* split the build & publish steps in .github/workflows/publish.yml ([a4e7b60](https://github.com/jobdoneright/act365/commit/a4e7b604f63ab2fec7e0e4f5a82f484933da237f))
+
 ## [1.2.0](https://github.com/jobdoneright/act365/compare/v1.1.2...v1.2.0) (2025-03-05)
 
 

@@ -9,14 +9,9 @@ permissions:
   contents: read
 
 jobs:
-  pypi-publish:
-    name: Upload release to PyPI
+  build:
+    name: Build python package
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/project/act365/
-    permissions:
-      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,6 +36,27 @@ jobs:
 
       - name: Package project
         run: poetry build
+
+      - name: Upload package
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Upload release to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/act365/
+    permissions:
+      id-token: write
+    steps:
+      - name: Retrieve packages
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

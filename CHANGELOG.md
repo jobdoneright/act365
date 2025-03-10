@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.1](https://github.com/jobdoneright/act365/compare/v1.2.0...v1.2.1) (2025-03-10)
+
+
+### Bug Fixes
+
+* split the build & publish steps in .github/workflows/publish.yml ([de173cb](https://github.com/jobdoneright/act365/commit/de173cb28408a77ff1cc7484299419199092df14))
+* split the build & publish steps in .github/workflows/publish.yml ([a4e7b60](https://github.com/jobdoneright/act365/commit/a4e7b604f63ab2fec7e0e4f5a82f484933da237f))
+* Update release-please to use .release-please-manifest.json so that it updates pyproject.toml ([38ca87b](https://github.com/jobdoneright/act365/commit/38ca87b0de08aeeafbee60be8209b6fe1c280472))
+* Update release-please to use .release-please-manifest.json so that it updates pyproject.toml ([043e00c](https://github.com/jobdoneright/act365/commit/043e00c52b00c5faae9d091017f73ac037ddc70e))
+* Update release-please to use .release-please-manifest.json so that it updates pyproject.toml ([3478604](https://github.com/jobdoneright/act365/commit/3478604442228e21838f446096d02f35765d9847))
+* Update release-please to use .release-please-manifest.json so that it updates pyproject.toml ([61f3ea9](https://github.com/jobdoneright/act365/commit/61f3ea9eb2151a8057b3b99fba2d56e3ce57c212))
+
 ## [1.2.0](https://github.com/jobdoneright/act365/compare/v1.1.2...v1.2.0) (2025-03-05)
 
 

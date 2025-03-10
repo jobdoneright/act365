@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/jobdoneright/act365/compare/v1.2.1...v1.2.2) (2025-03-10)
+
+
+### Bug Fixes
+
+* bump actions/upload-artifact & actions/download-artifact to v4 ([#27](https://github.com/jobdoneright/act365/issues/27)) ([97f21a3](https://github.com/jobdoneright/act365/commit/97f21a3a02e08ae72a86e3491e448287395b2199))
+
 ## [1.2.1](https://github.com/jobdoneright/act365/compare/v1.2.0...v1.2.1) (2025-03-10)
 
 

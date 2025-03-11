@@ -19,6 +19,6 @@ jobs:
           # (PAT) and configured it as a GitHub action secret named
           # `RELEASE_PLEASE_TOKEN` (this secret name is not important).
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          # this contains the extra this will this update pyproject.toml
+          # this contains the extra config that will update pyproject.toml
           release-type: python
           manifest-file: .release-please-manifest.json

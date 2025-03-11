@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - '*.*.*'
-  # for debug purposes, remove when we get the bloody thing working
-  pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -40,9 +37,6 @@ jobs:
       - name: Package project
         run: poetry build
 
-      - name: Package debug
-        run: ls -la dist/
-
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
@@ -64,12 +58,6 @@ jobs:
         with:
           name: dist
           path: dist/
-
-      - name: Package debug
-        run: |
-          pwd
-          ls -la
-          ls -la dist/
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

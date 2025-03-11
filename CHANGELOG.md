@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.4](https://github.com/jobdoneright/act365/compare/v1.2.3...v1.2.4) (2025-03-11)
+
+
+### Bug Fixes
+
+* debug ([#32](https://github.com/jobdoneright/act365/issues/32)) ([2f91316](https://github.com/jobdoneright/act365/commit/2f9131613e5b861717b3342368a6e196ccd56cce))
+* relax python requirements to &gt;=3.11,&lt;4.0 ([#34](https://github.com/jobdoneright/act365/issues/34)) ([bd96c1a](https://github.com/jobdoneright/act365/commit/bd96c1a00b29307a744c64997d2430cfc2f8f9f8))
+
 ## [1.2.3](https://github.com/jobdoneright/act365/compare/v1.2.2...v1.2.3) (2025-03-11)
 
 

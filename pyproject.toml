@@ -1,5 +1,6 @@
 [project]
 name = "act365"
+# version is maintained by release-please, via the release-please-action & .release-please-manifest.json
 version = "1.2.3"
 description = "Python Client for ACT365"
 authors = [{ name = "Simon McCartney", email = "simon@mccartney.ie" }]

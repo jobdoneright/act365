@@ -37,9 +37,6 @@ jobs:
       - name: Package project
         run: poetry build
 
-      - name: Package debug
-        run: ls -la dist/
-
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
@@ -60,9 +57,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
-
-      - name: Package debug
-        run: ls -la dist/
+          path: dist/
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

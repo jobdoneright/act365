@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/jobdoneright/act365/compare/v1.2.2...v1.2.3) (2025-03-11)
+
+
+### Bug Fixes
+
+* bump the patch version to debug the publish action ([#30](https://github.com/jobdoneright/act365/issues/30)) ([5e1a36b](https://github.com/jobdoneright/act365/commit/5e1a36b12aa52dd92298497b04eaf410630bbd52))
+
 ## [1.2.2](https://github.com/jobdoneright/act365/compare/v1.2.1...v1.2.2) (2025-03-10)
 
 

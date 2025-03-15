@@ -80,6 +80,19 @@ class TestBookingClient:
         assert response.json().get("BookingID") > 0
         assert response.json().get("Message") is None
 
+    def test_get_booking(self, act365_client):
+        bookings = act365_client.getBookings(
+            me.get("SiteID"), datefrom="01/01/2000"
+        )
+        booking = act365_client.getBooking(
+            me.get("SiteID"), bookings[0].BookingID
+        )
+        assert booking.BookingID == bookings[0].BookingID
+
+    def test_get_booking_missing(self, act365_client):
+        with pytest.raises(Exception):
+            act365_client.getBooking(me.get("SiteID"), 999999)
+
     def test_create_bookingRAW(self, act365_client):
         booking = {
             "SiteID": 8539,

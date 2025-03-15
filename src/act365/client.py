@@ -122,6 +122,12 @@ class Act365Client:
         response = self.client.post(self.url + "/Bookings", data=data)
         return response
 
+    def getBooking(self, siteid, id):
+        response = self.client.get(
+            self.url + "/Bookings", params={"siteid": siteid, "bookingID": id}
+        )
+        return Booking(**json.loads(response.text))
+
     def getBookings(self, siteid, datefrom=None):
         if datefrom is None:
             datefrom = datetime.now().strftime("%d/%m/%Y")

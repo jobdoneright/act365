@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/jobdoneright/act365/compare/v1.2.4...v1.3.0) (2025-03-15)
+
+
+### Features
+
+* Added getBooking method to client & cli ([#35](https://github.com/jobdoneright/act365/issues/35)) ([8fe754c](https://github.com/jobdoneright/act365/commit/8fe754c02a12416a8c756ed4e8cc0793fe353d12))
+
 ## [1.2.4](https://github.com/jobdoneright/act365/compare/v1.2.3...v1.2.4) (2025-03-11)
 
 

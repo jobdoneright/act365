@@ -132,6 +132,26 @@ def list(ctx, datefrom):
 @click.pass_context
 @click.option(
     "--id",
+    help="ACT365 Booking ID to get",
+    required=True,
+)
+def get(ctx, id):
+    ctx.ensure_object(dict)
+    act365_client = Act365Client(
+        username=ctx.obj["username"],
+        password=ctx.obj["password"],
+        siteid=ctx.obj["siteid"],
+    )
+
+    booking = act365_client.getBooking(siteid=ctx.obj["siteid"], id=id)
+    click.echo(f"Found booking {booking.BookingID}")
+    click.echo(booking)
+
+
+@click.command()
+@click.pass_context
+@click.option(
+    "--id",
     "--bookingid",
     "bookingids",
     required=True,
@@ -153,6 +173,7 @@ def delete(ctx, bookingids):
 
 cli.add_command(bookings)
 bookings.add_command(list)
+bookings.add_command(get)
 bookings.add_command(delete)
 
 if __name__ == "__main__":

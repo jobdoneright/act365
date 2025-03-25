@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/jobdoneright/act365/compare/v1.3.0...v1.3.1) (2025-03-25)
+
+
+### Bug Fixes
+
+* getBooking should return None on invalid id ([#37](https://github.com/jobdoneright/act365/issues/37)) ([be02b73](https://github.com/jobdoneright/act365/commit/be02b734965ca40777edf487d5eece4bb637b02f))
+
 ## [1.3.0](https://github.com/jobdoneright/act365/compare/v1.2.4...v1.3.0) (2025-03-15)
 
 

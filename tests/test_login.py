@@ -89,8 +89,6 @@ def test_act365_apiary():
         response = client.put(url=url + "/cardholder", data=update_cardholder)
         assert response.status_code == httpx.codes.OK
         api_response = json5.loads(response.text)
-        assert api_response.get("Success") is True, api_response.get(
-            "ErrorMsg"
-        )
+        assert api_response.get("Success") is True, api_response.get("ErrorMsg")
         # f"ErrorCode: {api_response.get("ErrorCode")}, ErrorMsg: {api_response.get('ErrorMsg')}"
         assert api_response.get("ErrorCode", -1) == 0

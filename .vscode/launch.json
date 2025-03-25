@@ -5,13 +5,29 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python Debugger: act365 bookings list",
+      "name": "act365 bookings get (invalid id)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "src/act365/cli.py",
+      "console": "integratedTerminal",
+      "args": [
+        "-v",
+        "bookings",
+        "get",
+        "--id",
+        "40387698",
+      ]
+    },
+    {
+      "name": "act365 bookings list",
       "type": "debugpy",
       "request": "launch",
       "program": ".venv/bin/act365",
       "console": "integratedTerminal",
       "args": [
-        "-v", "bookings", "list"
+        "-v",
+        "bookings",
+        "list"
       ]
     }
   ]

@@ -4,7 +4,7 @@ from random import randint
 
 import pytest
 
-from act365.booking import Booking
+from act365.booking import STRPTIME_FMT, Booking
 from act365.client import Act365Client
 
 me = {
@@ -66,9 +66,7 @@ class TestBookingClient:
         # create a booking
         self.test_create_booking(act365_client)
 
-        bookings = act365_client.getBookings(
-            me.get("SiteID"), datefrom="01/01/2000"
-        )
+        bookings = act365_client.getBookings(me.get("SiteID"), datefrom="01/01/2000")
         assert len(bookings) > 0
         assert bookings[0].BookingID > 0
 
@@ -81,17 +79,13 @@ class TestBookingClient:
         assert response.json().get("Message") is None
 
     def test_get_booking(self, act365_client):
-        bookings = act365_client.getBookings(
-            me.get("SiteID"), datefrom="01/01/2000"
-        )
-        booking = act365_client.getBooking(
-            me.get("SiteID"), bookings[0].BookingID
-        )
+        bookings = act365_client.getBookings(me.get("SiteID"), datefrom="01/01/2000")
+        booking = act365_client.getBooking(me.get("SiteID"), bookings[0].BookingID)
         assert booking.BookingID == bookings[0].BookingID
 
     def test_get_booking_missing(self, act365_client):
-        with pytest.raises(Exception):
-            act365_client.getBooking(me.get("SiteID"), 999999)
+        b = act365_client.getBooking(me.get("SiteID"), 999999)
+        assert b is None
 
     def test_create_bookingRAW(self, act365_client):
         booking = {
@@ -113,9 +107,7 @@ class TestBookingClient:
 
     def test_booking_deleteall(self, act365_client):
         # bookings = act365_client.getBookings(me.get("SiteID"))
-        bookings = act365_client.getBookings(
-            me.get("SiteID"), datefrom="01/01/2021"
-        )
+        bookings = act365_client.getBookings(me.get("SiteID"), datefrom="01/01/2021")
 
         for booking in bookings:
             response = act365_client.deleteBooking(booking.BookingID)
@@ -123,8 +115,8 @@ class TestBookingClient:
 
     def test_booking_workflow(self, act365_client):
         now = datetime.now()
-        startvalid = now.strftime("%d/%m/%Y %H:%M")
-        endvalid = (now + timedelta(hours=1)).strftime("%d/%m/%Y %H:%M")
+        startvalid = now.strftime(STRPTIME_FMT)
+        endvalid = (now + timedelta(hours=1)).strftime(STRPTIME_FMT)
 
         PIN = f"{randint(0, 9999):04d}"
 

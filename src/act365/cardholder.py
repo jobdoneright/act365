@@ -1,5 +1,7 @@
 import datetime
 
+from act365.booking import STRPTIME_FMT
+
 me = {
     "CardHolderID": 21274334,
     "CustomerID": 5622,
@@ -72,29 +74,25 @@ class CardHolder(object):
         if self._StartValid_dt is None:
             return ""
         else:
-            return self._StartValid_dt.strftime("%d/%m/%Y %H:%M")
+            return self._StartValid_dt.strftime(STRPTIME_FMT)
 
     @StartValid.setter
     def StartValid(self, value: str | None):
         if value is None or value == "":
             self._StartValid_dt = value
         else:
-            self._StartValid_dt = datetime.datetime.strptime(
-                value, "%d/%m/%Y %H:%M"
-            )
+            self._StartValid_dt = datetime.datetime.strptime(value, STRPTIME_FMT)
 
     @property
     def EndValid(self) -> str:
         if self._EndValid_dt is None:
             return ""
         else:
-            return self._EndValid_dt.strftime("%d/%m/%Y %H:%M")
+            return self._EndValid_dt.strftime(STRPTIME_FMT)
 
     @EndValid.setter
     def EndValid(self, value: str | None):
         if value is None or value == "":
             self._EndValid_dt = value
         else:
-            self._EndValid_dt = datetime.datetime.strptime(
-                value, "%d/%m/%Y %H:%M"
-            )
+            self._EndValid_dt = datetime.datetime.strptime(value, STRPTIME_FMT)

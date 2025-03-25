@@ -17,9 +17,7 @@ LOG = logging.getLogger(__name__)
 
 
 class Act365Client:
-    def __init__(
-        self, username, password, siteid, url="https://userapi.act365.eu/api"
-    ):
+    def __init__(self, username, password, siteid, url="https://userapi.act365.eu/api"):
         self.username = username
         self.password = password
         self.siteid = siteid
@@ -83,9 +81,7 @@ class Act365Client:
         more_to_get = True
         while more_to_get:
             params["skipover"] = len(sites)
-            response = self.client.get(
-                self.url + "/Bookingsites", params=params
-            )
+            response = self.client.get(self.url + "/Bookingsites", params=params)
 
             if response.status_code == httpx.codes.OK:
                 _sites = json.loads(response.text)
@@ -126,7 +122,11 @@ class Act365Client:
         response = self.client.get(
             self.url + "/Bookings", params={"siteid": siteid, "bookingID": id}
         )
-        return Booking(**json.loads(response.text))
+        LOG.debug(f"Response: {response.status_code} {response.text}")
+        if response.text == "null":
+            return None
+        else:
+            return Booking(**json.loads(response.text))
 
     def getBookings(self, siteid, datefrom=None):
         if datefrom is None:

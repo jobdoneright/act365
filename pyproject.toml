@@ -18,6 +18,9 @@ act365 = "act365.cli:cli"
 readme = "README.md"
 packages = [{include = "act365", from = "src"}]
 
+[tool.isort]
+profile = "black"
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.1"
 pytest-httpx = "^0.30.0"

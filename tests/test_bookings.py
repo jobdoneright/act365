@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from act365.booking import Booking, BookingDoor
+from act365.booking import STRPTIME_FMT, Booking, BookingDoor
 
 me = {
     "CardHolderID": 21274334,
@@ -152,10 +152,8 @@ def test_booking_object():
 
 def test_booking_object_datetime():
     d = sample.copy()
-    d["StartValidity"] = datetime.strptime(
-        d["StartValidity"], "%d/%m/%Y %H:%M"
-    )
-    d["EndValidity"] = datetime.strptime(d["EndValidity"], "%d/%m/%Y %H:%M")
+    d["StartValidity"] = datetime.strptime(d["StartValidity"], STRPTIME_FMT)
+    d["EndValidity"] = datetime.strptime(d["EndValidity"], STRPTIME_FMT)
     booking = Booking(**d)
     assert booking.Forename == "Simon"
     assert booking.Surname == "McCartney"

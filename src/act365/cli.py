@@ -1,7 +1,11 @@
 import logging
+from datetime import datetime
 
 import click
 
+from act365.booking import (
+    STRPTIME_FMT as booking_strptime_fmt,  # Import the booking_strptime_fmt constant
+)
 from act365.client import Act365Client  # Import the Act365Client class
 
 logging.basicConfig(
@@ -56,13 +60,13 @@ def cli(ctx, username, password, siteid, verbose):
     if verbose > 0:
         # only __package__ should be needed here :confused:
         logging.getLogger(__package__).setLevel(loglevel[verbose])
-        LOG.setLevel(loglevel.get(verbose, logging.DEBUG))
+        LOG.setLevel(loglevel[verbose])
 
         LOG.info(
-            f"Verbosity set to {verbose}, logging level set to {logging.getLevelName(logging.getLogger('act635').getEffectiveLevel())}"
+            f"Verbosity set to {verbose}, act365 logging level set to {logging.getLevelName(logging.getLogger('act635').getEffectiveLevel())}"
         )
         LOG.info(
-            f"Verbosity set to {verbose}, logging level set to {logging.getLevelName(LOG.getEffectiveLevel())}"
+            f"Verbosity set to {verbose}, act365.cli logging level set to {logging.getLevelName(LOG.getEffectiveLevel())}"
         )
 
         LOG.debug(f"__name__ = {__name__}")
@@ -101,17 +105,21 @@ def list(ctx, datefrom):
         siteid=ctx.obj["siteid"],
     )
 
-    bookings = act365_client.getBookings(
-        siteid=ctx.obj["siteid"], datefrom=datefrom
-    )
+    bookings = act365_client.getBookings(siteid=ctx.obj["siteid"], datefrom=datefrom)
 
     click.echo(f"Found {len(bookings)} bookings")
 
     if len(bookings) > 0:
-        booking_fmt = "{:<10} {:<10} {:<30} {:<18} {:<18} {:<18}"
+        booking_fmt = "{:<10} {:<10} {:<50} {:<18} {:<18} {:<18}"
         print(
             booking_fmt.format(
-                "BookingID", "Forename", "Surname", "Start", "End", "Creation"
+                "BookingID",
+                "Forename",
+                "Surname",
+                "Start",
+                "End",
+                "PIN",
+                "Creation",
             )
         )
 
@@ -123,6 +131,7 @@ def list(ctx, datefrom):
                     booking.Surname,
                     booking.StartValidity,
                     booking.EndValidity,
+                    booking.PIN,
                     booking.BookingCreatedTime,
                 )
             )
@@ -144,8 +153,11 @@ def get(ctx, id):
     )
 
     booking = act365_client.getBooking(siteid=ctx.obj["siteid"], id=id)
-    click.echo(f"Found booking {booking.BookingID}")
-    click.echo(booking)
+    if booking is None:
+        click.echo(f"Booking {id} not found.")
+    else:
+        click.echo(f"Found booking {booking.BookingID}")
+        click.echo(booking)
 
 
 @click.command()
@@ -154,11 +166,22 @@ def get(ctx, id):
     "--id",
     "--bookingid",
     "bookingids",
-    required=True,
+    required=False,
     multiple=True,
     help="The booking ID to delete. Multiple booking IDs can be specified by repeating the option.",
 )
-def delete(ctx, bookingids):
+@click.option(
+    "--expired",
+    is_flag=True,
+    help="Delete all expired bookings.",
+)
+@click.option(
+    "--datefrom",
+    default="01/01/2000",
+    show_default=True,
+    help="The date to list bookings from, in DD/MM/YYYY format.",
+)
+def delete(ctx, bookingids, expired, datefrom):
     ctx.ensure_object(dict)
     act365_client = Act365Client(
         username=ctx.obj["username"],
@@ -166,9 +189,31 @@ def delete(ctx, bookingids):
         siteid=ctx.obj["siteid"],
     )
 
-    for bookingid in bookingids:
-        response = act365_client.deleteBooking(bookingid)
-        click.echo(response)
+    if expired:
+        LOG.debug(
+            "Expired flag is set. Fetching all bookings to check for expired ones."
+        )
+        bookings = act365_client.getBookings(
+            siteid=ctx.obj["siteid"], datefrom=datefrom
+        )
+        now = datetime.now()
+        LOG.debug(f"Current datetime: {now}")
+        expired_bookings = [
+            booking
+            for booking in bookings
+            if datetime.strptime(booking.EndValidity, booking_strptime_fmt) < now
+        ]
+        LOG.debug(f"Found {len(expired_bookings)} expired bookings.")
+        for booking in expired_bookings:
+            response = act365_client.deleteBooking(booking.BookingID)
+            LOG.debug(f"Deleted expired booking {booking.BookingID}: {response}")
+            click.echo(f"Deleted expired booking {booking.BookingID}: {response}")
+    else:
+        LOG.debug(f"Deleting specified booking IDs: {bookingids}")
+        for bookingid in bookingids:
+            response = act365_client.deleteBooking(bookingid)
+            LOG.debug(f"Deleted booking {bookingid}: {response}")
+            click.echo(response)
 
 
 cli.add_command(bookings)

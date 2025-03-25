@@ -2,6 +2,8 @@ from dataclasses import InitVar, asdict, dataclass, field
 from datetime import datetime
 from typing import List
 
+STRPTIME_FMT = "%d/%m/%Y %H:%M"
+
 
 @dataclass
 class BookingDoor:
@@ -69,7 +71,7 @@ class Booking:
     @property
     def StartValidity(self):
         if isinstance(self._StartValidity, datetime):
-            return self._StartValidity.strftime("%d/%m/%Y %H:%M")
+            return self._StartValidity.strftime(STRPTIME_FMT)
         else:
             return self._StartValidity
 
@@ -78,12 +80,12 @@ class Booking:
         if isinstance(value, datetime):
             self._StartValidity = value
         else:
-            self._StartValidity = datetime.strptime(value, "%d/%m/%Y %H:%M")
+            self._StartValidity = datetime.strptime(value, STRPTIME_FMT)
 
     @property
     def EndValidity(self):
         if isinstance(self._EndValidity, datetime):
-            return self._EndValidity.strftime("%d/%m/%Y %H:%M")
+            return self._EndValidity.strftime(STRPTIME_FMT)
         else:
             return self._EndValidity
 
@@ -92,7 +94,7 @@ class Booking:
         if isinstance(value, datetime):
             self._EndValidity = value
         else:
-            self._EndValidity = datetime.strptime(value, "%d/%m/%Y %H:%M")
+            self._EndValidity = datetime.strptime(value, STRPTIME_FMT)
 
     # @property
     # def DoorID(self):

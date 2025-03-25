@@ -5,6 +5,7 @@ import httpx
 import json5
 import pytest
 
+from act365.booking import STRPTIME_FMT
 from act365.client import Act365Auth
 
 
@@ -47,16 +48,16 @@ def test_act365_barkside():
 
         # Add an hour to the StartValid and EndValid times
         current_start_valid_dt = datetime.strptime(
-            cardholder.get("StartValid"), "%d/%m/%Y %H:%M"
+            cardholder.get("StartValid"), STRPTIME_FMT
         )
         current_end_valid_dt = datetime.strptime(
-            cardholder.get("EndValid"), "%d/%m/%Y %H:%M"
+            cardholder.get("EndValid"), STRPTIME_FMT
         )
-        new_start_valid = (
-            current_start_valid_dt + timedelta(hours=1)
-        ).strftime("%d/%m/%Y %H:%M")
+        new_start_valid = (current_start_valid_dt + timedelta(hours=1)).strftime(
+            STRPTIME_FMT
+        )
         new_end_valid = (current_end_valid_dt + timedelta(hours=1)).strftime(
-            "%d/%m/%Y %H:%M"
+            STRPTIME_FMT
         )
 
         # Update the cardholder
@@ -66,9 +67,7 @@ def test_act365_barkside():
         response = client.put(url=url + "/cardholder", data=update_cardholder)
         assert response.status_code == httpx.codes.OK
         api_response = json5.loads(response.text)
-        assert api_response.get("Success") is True, api_response.get(
-            "ErrorMsg"
-        )
+        assert api_response.get("Success") is True, api_response.get("ErrorMsg")
         assert (
             api_response.get("ErrorCode") == 0
         ), f"ErrorCode: {api_response.get('ErrorCode')}, ErrorMsg: {api_response.get('ErrorMsg')}"
@@ -115,9 +114,7 @@ def test_act365_create():
         response = client.post(url=url + "/cardholder", data=cardholder)
         assert response.status_code == httpx.codes.OK
         api_response = json5.loads(response.text)
-        assert api_response.get("Success") is True, api_response.get(
-            "ErrorMsg"
-        )
+        assert api_response.get("Success") is True, api_response.get("ErrorMsg")
         assert api_response.get("NewID") != 0, api_response.get("ErrorMsg")
         cardholder_id = api_response.get("NewID")
 

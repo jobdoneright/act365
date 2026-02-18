@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.2](https://github.com/jobdoneright/act365/compare/v1.3.1...v1.3.2) (2026-02-18)
+
+
+### Bug Fixes
+
+* bookings list missing PIN/Doors columns, getBooking on non-200, expanded workflow test ([3973565](https://github.com/jobdoneright/act365/commit/3973565a613e5d138c610c596585de32b1a7130e))
+* upgrade httpcore to 1.0.9 and h11 to 0.16.0 to fix malformed chunked-encoding CVE ([cf87a0d](https://github.com/jobdoneright/act365/commit/cf87a0d9eb47c54f6d2d4109f6d3425098346696))
+
+
+### Documentation
+
+* add CLAUDE.md and API documentation link to README ([8c753fb](https://github.com/jobdoneright/act365/commit/8c753fb4667c07f2c50757381a40f2a0a502cb2f))
+
 ## [1.3.1](https://github.com/jobdoneright/act365/compare/v1.3.0...v1.3.1) (2025-03-25)
 
 

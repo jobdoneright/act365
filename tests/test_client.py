@@ -137,11 +137,17 @@ class TestBookingClient:
         assert response.json().get("Success") is True
         assert response.json().get("BookingID") > 0
 
-        bookings = act365_client.getBookings(me.get("SiteID"))
-        assert len(bookings) > 0
-        assert bookings[0].BookingID > 0
+        r = act365_client.getBooking(me.get("SiteID"), response.json().get("BookingID"))
+        assert r.BookingID == response.json().get("BookingID")
+        assert r.Forename == booking_dict.get("Forename")
+        # ACT365 appents a unique number to the surname
+        assert r.Surname.startswith(booking_dict.get("Surname"))
+        assert r.PIN == booking_dict.get("PIN")
+        assert r.StartValidity == booking_dict.get("StartValidity")
+        assert r.EndValidity == booking_dict.get("EndValidity")
+        assert r.DoorIDs == booking_dict.get("DoorIDs")
 
-        response = act365_client.deleteBooking(bookings[0].BookingID)
+        response = act365_client.deleteBooking(r.BookingID)
         assert response.json().get("Success") is True
 
     def test_client_simon(self, act365_client):

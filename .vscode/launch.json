@@ -22,7 +22,7 @@
       "name": "act365 bookings list",
       "type": "debugpy",
       "request": "launch",
-      "program": ".venv/bin/act365",
+      "program": "src/act365/cli.py",
       "console": "integratedTerminal",
       "args": [
         "-v",

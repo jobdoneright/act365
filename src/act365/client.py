@@ -123,7 +123,10 @@ class Act365Client:
             self.url + "/Bookings", params={"siteid": siteid, "bookingID": id}
         )
         LOG.debug(f"Response: {response.status_code} {response.text}")
-        if response.text == "null":
+        if response.text == "null" or response.status_code != httpx.codes.OK:
+            LOG.error(
+                f"Failed to get booking {id}, {response.status_code}, {response.text}"
+            )
             return None
         else:
             return Booking(**json.loads(response.text))

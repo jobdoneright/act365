@@ -1,3 +1,5 @@
+import pytest
+
 from act365.cardholder import CardHolder
 
 me = {
@@ -39,3 +41,61 @@ def test_cardholder():
     cardholder.EndValid = rt["EndValid"]
     assert cardholder.StartValid == rt["StartValid"]
     assert cardholder.EndValid == rt["EndValid"]
+
+
+def test_cardholder_dict():
+    cardholder = CardHolder(
+        {
+            "CardHolderID": 21274334,
+            "CustomerID": 5622,
+            "SiteID": 8539,
+            "Groups": [27470],
+            "Forename": "Simon",
+            "Surname": "McCartney",
+            "Email": "simon@mccartney.ie",
+            "PIN": "1234",
+        }
+    )
+    cardholder.StartValid = rt["StartValid"]
+    cardholder.EndValid = rt["EndValid"]
+
+    d = cardholder.dict()
+
+    assert d["Forename"] == "Simon"
+    assert d["Surname"] == "McCartney"
+    assert d["Email"] == "simon@mccartney.ie"
+    assert d["PIN"] == "1234"
+    assert d["Groups"] == [27470]
+    assert d["StartValid"] == rt["StartValid"]
+    assert d["EndValid"] == rt["EndValid"]
+    assert d["CardHolderID"] == 21274334
+    # private datetime attributes should not be in the dict
+    assert "_StartValid_dt" not in d
+    assert "_EndValid_dt" not in d
+
+
+def test_cardholder_requires_siteid():
+    with pytest.raises(ValueError, match="SiteID"):
+        CardHolder({"CustomerID": 5622, "Groups": [27470]})
+
+
+def test_cardholder_requires_customerid():
+    with pytest.raises(ValueError, match="CustomerID"):
+        CardHolder({"SiteID": 8539, "Groups": [27470]})
+
+
+def test_cardholder_requires_group():
+    with pytest.raises(ValueError, match="Group"):
+        CardHolder({"SiteID": 8539, "CustomerID": 5622})
+
+
+def test_cardholder_max_4_cards():
+    with pytest.raises(ValueError, match="4 cards"):
+        CardHolder(
+            {
+                "SiteID": 8539,
+                "CustomerID": 5622,
+                "Groups": [27470],
+                "Cards": [1, 2, 3, 4, 5],
+            }
+        )

@@ -110,7 +110,7 @@ def list(ctx, datefrom):
     click.echo(f"Found {len(bookings)} bookings")
 
     if len(bookings) > 0:
-        booking_fmt = "{:<10} {:<10} {:<50} {:<18} {:<18} {:<18}"
+        booking_fmt = "{:<10} {:<10} {:<50} {:<18} {:<18} {:<5} {:<10} {:<18}"
         print(
             booking_fmt.format(
                 "BookingID",
@@ -119,11 +119,13 @@ def list(ctx, datefrom):
                 "Start",
                 "End",
                 "PIN",
+                "Doors",
                 "Creation",
             )
         )
 
         for booking in bookings:
+            LOG.debug(f"Booking: {booking}")
             click.echo(
                 booking_fmt.format(
                     booking.BookingID,
@@ -132,6 +134,7 @@ def list(ctx, datefrom):
                     booking.StartValidity,
                     booking.EndValidity,
                     booking.PIN,
+                    ",".join(str(door) for door in booking.DoorIDs),
                     booking.BookingCreatedTime,
                 )
             )

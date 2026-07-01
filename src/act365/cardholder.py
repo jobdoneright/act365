@@ -65,6 +65,14 @@ class CardHolder(object):
         merged = dict(list(empty.items()) + list(dictionary.items()))
         for key in merged:
             setattr(self, key, merged[key])
+        if not self.SiteID:
+            raise ValueError("CardHolder SiteID is required")
+        if not self.CustomerID:
+            raise ValueError("CardHolder CustomerID is required")
+        if not self.Groups:
+            raise ValueError("CardHolder must belong to at least one Group")
+        if len(self.Cards) > 4:
+            raise ValueError("CardHolder can have at most 4 cards")
 
     def __repr__(self):
         return "<dict2obj: %s>" % self.__dict__
@@ -96,3 +104,9 @@ class CardHolder(object):
             self._EndValid_dt = value
         else:
             self._EndValid_dt = datetime.datetime.strptime(value, STRPTIME_FMT)
+
+    def dict(self) -> dict:
+        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+        result["StartValid"] = self.StartValid
+        result["EndValid"] = self.EndValid
+        return result

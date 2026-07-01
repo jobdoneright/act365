@@ -54,7 +54,14 @@ class Act365Client:
                     more_to_get = False
 
                 for ch in cardholders:
-                    self._CardHolders.append(CardHolder(ch))
+                    try:
+                        if ch.get("SiteID") == 0 or ch.get("SiteID") is None:
+                            ch["SiteID"] = self.siteid
+                        self._CardHolders.append(CardHolder(ch))
+                    except ValueError as e:
+                        LOG.warning(
+                            f"Skipping cardholder {ch.get('CardHolderID')}: {e}"
+                        )
 
             else:
                 more_to_get = False
@@ -72,6 +79,43 @@ class Act365Client:
         for ch in self._CardHolders:
             if ch.CardHolderID == id:
                 return ch
+
+    def createCardholder(self, cardholder: CardHolder | dict) -> int | None:
+        if isinstance(cardholder, dict):
+            data = cardholder
+        elif isinstance(cardholder, CardHolder):
+            data = cardholder.dict()
+        else:
+            raise TypeError("cardholder must be a CardHolder object or a dictionary")
+
+        response = self.client.post(self.url + "/cardholder", json=data)
+        LOG.debug(f"createCardholder response: {response.status_code} {response.text}")
+        if response.status_code == httpx.codes.OK:
+            body = response.json()
+            if body.get("Success"):
+                return body.get("NewID")
+        LOG.error(
+            f"Failed to create cardholder: {response.status_code} {response.text}"
+        )
+        return None
+
+    def updateCardholder(self, cardholder: CardHolder | dict) -> bool:
+        if isinstance(cardholder, dict):
+            data = cardholder
+        elif isinstance(cardholder, CardHolder):
+            data = cardholder.dict()
+        else:
+            raise TypeError("cardholder must be a CardHolder object or a dictionary")
+
+        response = self.client.put(self.url + "/cardholder", json=data)
+        LOG.debug(f"updateCardholder response: {response.status_code} {response.text}")
+        if response.status_code == httpx.codes.OK and response.json().get(
+            "Success", False
+        ):
+            return True
+        body = response.json()
+        error_msg = body.get("ErrorMsg", f"HTTP {response.status_code}")
+        raise ValueError(f"Failed to update cardholder: {error_msg}")
 
     def getBookingSites(self, maxlimit=100, skipover=0):
         params = {"maxlimit": maxlimit, "skipover": skipover}

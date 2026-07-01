@@ -5,6 +5,7 @@ from random import randint
 import pytest
 
 from act365.booking import STRPTIME_FMT, Booking
+from act365.cardholder import CardHolder
 from act365.client import Act365Client
 
 me = {
@@ -150,6 +151,51 @@ class TestBookingClient:
         response = act365_client.deleteBooking(r.BookingID)
         assert response.json().get("Success") is True
 
+    def _create_test_cardholder(self, act365_client) -> int:
+        now = datetime.now()
+        cardholder = CardHolder(
+            {
+                "CustomerID": me.get("CustomerID"),
+                "SiteID": me.get("SiteID"),
+                "Forename": "Test",
+                "Surname": "Cardholder",
+                "Email": f"test+{now.strftime('%Y%m%d%H%M%S')}@example.com",
+                "PIN": f"{randint(0, 9999):04d}",
+                "Groups": me.get("Groups"),
+                "Card1": 0,
+                "Card2": 0,
+                "Enabled": True,
+                "StartValid": now.strftime(STRPTIME_FMT),
+                "EndValid": (now + timedelta(hours=1)).strftime(STRPTIME_FMT),
+            }
+        )
+        new_id = act365_client.createCardholder(cardholder)
+        assert new_id is not None
+        assert isinstance(new_id, int)
+        assert new_id > 0
+        return new_id
+
+    def test_create_cardholder(self, act365_client):
+        self._create_test_cardholder(act365_client)
+
+    def test_update_cardholder(self, act365_client):
+        new_id = self._create_test_cardholder(act365_client)
+        now = datetime.now()
+        cardholder = CardHolder(
+            {
+                "CardHolderID": new_id,
+                "CustomerID": me.get("CustomerID"),
+                "SiteID": me.get("SiteID"),
+                "Forename": "Test",
+                "Surname": "Cardholder",
+                "Groups": me.get("Groups"),
+                "StartValid": (now + timedelta(hours=2)).strftime(STRPTIME_FMT),
+                "EndValid": (now + timedelta(hours=3)).strftime(STRPTIME_FMT),
+            }
+        )
+        result = act365_client.updateCardholder(cardholder)
+        assert result is True
+
     def test_client_simon(self, act365_client):
         params = {
             "siteid": 8539,
@@ -166,7 +212,14 @@ class TestBookingClient:
         assert len(cardholders) > 2
 
     def test_get_by_email(self, act365_client):
+        import time
+
+        start = time.monotonic()
         cardholder = act365_client.getCardholderByEmail("simon@mccartney.ie")
+        elapsed = time.monotonic() - start
+
+        total = len(act365_client._CardHolders)
+        print(f"\nLoaded {total} cardholders in {elapsed:.2f}s to find by email")
 
         assert cardholder.Forename == "Simon"
         assert cardholder.Surname == "McCartney"

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/jobdoneright/act365/compare/v1.3.1...v1.4.0) (2026-06-17)
+
+
+### Features
+
+* add createCardholder and updateCardholder ([#41](https://github.com/jobdoneright/act365/issues/41)) ([259234b](https://github.com/jobdoneright/act365/commit/259234b68a80b3ab593df133c932ec78d6b13e06))
+
 ## [1.3.1](https://github.com/jobdoneright/act365/compare/v1.3.0...v1.3.1) (2025-03-25)
 
 

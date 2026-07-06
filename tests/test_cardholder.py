@@ -74,6 +74,26 @@ def test_cardholder_dict():
     assert "_EndValid_dt" not in d
 
 
+def test_cardholder_empty_validity_dates():
+    # the API returns "" for cardholders with no validity dates; the
+    # getters must not blow up on them (regression: str has no strftime)
+    cardholder = CardHolder(
+        {
+            "CustomerID": 5622,
+            "SiteID": 8539,
+            "Groups": [27470],
+            "StartValid": "",
+            "EndValid": "",
+        }
+    )
+    assert cardholder.StartValid == ""
+    assert cardholder.EndValid == ""
+
+    d = cardholder.dict()
+    assert d["StartValid"] == ""
+    assert d["EndValid"] == ""
+
+
 def test_cardholder_requires_siteid():
     with pytest.raises(ValueError, match="SiteID"):
         CardHolder({"CustomerID": 5622, "Groups": [27470]})

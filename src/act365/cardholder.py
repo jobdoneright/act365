@@ -87,7 +87,7 @@ class CardHolder(object):
     @StartValid.setter
     def StartValid(self, value: str | None):
         if value is None or value == "":
-            self._StartValid_dt = value
+            self._StartValid_dt = None
         else:
             self._StartValid_dt = datetime.datetime.strptime(value, STRPTIME_FMT)
 
@@ -101,7 +101,7 @@ class CardHolder(object):
     @EndValid.setter
     def EndValid(self, value: str | None):
         if value is None or value == "":
-            self._EndValid_dt = value
+            self._EndValid_dt = None
         else:
             self._EndValid_dt = datetime.datetime.strptime(value, STRPTIME_FMT)
 

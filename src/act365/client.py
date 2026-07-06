@@ -71,7 +71,7 @@ class Act365Client:
     def getCardholderByEmail(self, email):
         self.getCardholders()
         for ch in self._CardHolders:
-            if ch.Email.lower() == email.lower():
+            if ch.Email and ch.Email.lower() == email.lower():
                 return ch
 
     def getCardholderById(self, id):

@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 
@@ -219,10 +220,122 @@ def delete(ctx, bookingids, expired, datefrom):
             click.echo(response)
 
 
+@click.group()
+@click.pass_context
+def cardholders(ctx):
+    ctx.ensure_object(dict)
+    pass
+
+
+@click.command(name="list")
+@click.pass_context
+@click.option(
+    "--search",
+    default=None,
+    help="Filter cardholders using the API search string (matches name, email, etc).",
+)
+@click.option(
+    "--enabled/--disabled",
+    "enabled",
+    default=None,
+    help="Only list enabled (or disabled) cardholders.",
+)
+@click.option(
+    "--all-sites",
+    is_flag=True,
+    help="List cardholders across all sites, including customer-level "
+    "cardholders (Managed By Site: All Sites) that a site-scoped "
+    "query excludes.",
+)
+def cardholders_list(ctx, search, enabled, all_sites):
+    ctx.ensure_object(dict)
+    act365_client = Act365Client(
+        username=ctx.obj["username"],
+        password=ctx.obj["password"],
+        siteid=ctx.obj["siteid"],
+    )
+
+    params = {} if all_sites else {"siteid": ctx.obj["siteid"]}
+    if search is not None:
+        params["searchString"] = search
+    if enabled is not None:
+        params["enabled"] = enabled
+
+    cardholders = act365_client.getCardholders(params=params)
+
+    click.echo(f"Found {len(cardholders)} cardholders")
+
+    if len(cardholders) > 0:
+        cardholder_fmt = "{:<12} {:<15} {:<25} {:<30} {:<8} {:<18} {:<18} {:<15}"
+        click.echo(
+            cardholder_fmt.format(
+                "CardHolderID",
+                "Forename",
+                "Surname",
+                "Email",
+                "Enabled",
+                "StartValid",
+                "EndValid",
+                "Cards",
+            )
+        )
+
+        for ch in cardholders:
+            LOG.debug(f"CardHolder: {ch}")
+            click.echo(
+                cardholder_fmt.format(
+                    ch.CardHolderID,
+                    ch.Forename or "",
+                    ch.Surname or "",
+                    ch.Email or "",
+                    str(ch.Enabled),
+                    ch.StartValid,
+                    ch.EndValid,
+                    ",".join(str(card) for card in ch.Cards),
+                )
+            )
+
+
+@click.command(name="get")
+@click.pass_context
+@click.option(
+    "--id",
+    type=int,
+    help="ACT365 CardHolder ID to get.",
+)
+@click.option(
+    "--email",
+    help="Email address of the cardholder to get.",
+)
+def cardholders_get(ctx, id, email):
+    ctx.ensure_object(dict)
+    if (id is None) == (email is None):
+        raise click.UsageError("Provide exactly one of --id or --email.")
+
+    act365_client = Act365Client(
+        username=ctx.obj["username"],
+        password=ctx.obj["password"],
+        siteid=ctx.obj["siteid"],
+    )
+
+    if id is not None:
+        cardholder = act365_client.getCardholderById(id)
+    else:
+        cardholder = act365_client.getCardholderByEmail(email)
+
+    if cardholder is None:
+        click.echo(f"Cardholder {id if id is not None else email} not found.")
+    else:
+        click.echo(json.dumps(cardholder.dict(), indent=2))
+
+
 cli.add_command(bookings)
 bookings.add_command(list)
 bookings.add_command(get)
 bookings.add_command(delete)
+cli.add_command(cardholders)
+cardholders.add_command(cardholders_list)
+cardholders.add_command(cardholders_get)
 
 if __name__ == "__main__":
     cli(obj={})

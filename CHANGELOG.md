@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/jobdoneright/act365/compare/v1.4.0...v1.5.0) (2026-07-06)
+
+
+### Features
+
+* add cardholders CLI commands (list, get) ([#42](https://github.com/jobdoneright/act365/issues/42)) ([0517bb4](https://github.com/jobdoneright/act365/commit/0517bb48e6c9cbd039e7fca3e675a4de11c4355f))
+
 ## [1.4.0](https://github.com/jobdoneright/act365/compare/v1.3.1...v1.4.0) (2026-06-17)
 
 

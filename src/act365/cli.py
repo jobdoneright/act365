@@ -227,6 +227,39 @@ def cardholders(ctx):
     pass
 
 
+CARDHOLDER_SORT_FIELDS = (
+    "CardHolderID",
+    "Forename",
+    "Surname",
+    "Email",
+    "Enabled",
+    "StartValid",
+    "EndValid",
+    "Cards",
+)
+
+
+def _cardholder_sort_key(sort_by):
+    def key(ch):
+        # Cardholders without a value for the field sort last; the leading
+        # flag keeps missing values out of the type-specific comparison.
+        if sort_by == "Cards":
+            cards = ch.Cards or []
+            return (0, min(cards)) if cards else (1, 0)
+        value = getattr(ch, sort_by)
+        if sort_by in ("StartValid", "EndValid"):
+            if not value:
+                return (1, 0)
+            return (0, datetime.strptime(value, booking_strptime_fmt))
+        if value is None:
+            return (1, 0)
+        if isinstance(value, str):
+            return (0, value.lower())
+        return (0, value)
+
+    return key
+
+
 @click.command(name="list")
 @click.pass_context
 @click.option(
@@ -247,7 +280,14 @@ def cardholders(ctx):
     "cardholders (Managed By Site: All Sites) that a site-scoped "
     "query excludes.",
 )
-def cardholders_list(ctx, search, enabled, all_sites):
+@click.option(
+    "--sort-by",
+    type=click.Choice(CARDHOLDER_SORT_FIELDS, case_sensitive=False),
+    default=None,
+    help="Sort the listing by the given field, ascending. Cards sorts by "
+    "the lowest card number; cardholders without a value sort last.",
+)
+def cardholders_list(ctx, search, enabled, all_sites, sort_by):
     ctx.ensure_object(dict)
     act365_client = Act365Client(
         username=ctx.obj["username"],
@@ -262,6 +302,9 @@ def cardholders_list(ctx, search, enabled, all_sites):
         params["enabled"] = enabled
 
     cardholders = act365_client.getCardholders(params=params)
+
+    if sort_by is not None:
+        cardholders = sorted(cardholders, key=_cardholder_sort_key(sort_by))
 
     click.echo(f"Found {len(cardholders)} cardholders")
 

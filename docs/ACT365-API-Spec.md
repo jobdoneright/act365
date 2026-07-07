@@ -491,6 +491,8 @@ Vanderbilt implements API throttling to ensure optimal service for all users.
 
 **Endpoint:** `GET /api/cardholders`
 
+> Repo note: the current Python client in this repository calls `GET /api/cardholder` (singular) for listing cardholders.
+
 **Query Parameters:**
 - `siteid` (optional): Filter by site
 - `customerid` (optional): Filter by customer

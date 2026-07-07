@@ -25,22 +25,22 @@ the tables below map that API surface to the Python bindings in `Act365Client` /
 
 | API | Binding | CLI |
 | --- | --- | --- |
-| List cardholders (`GET /api/cardholders`) | `Act365Client.getCardholders()` — paginated, supports `siteid`, `enabled`, `searchString` etc. filters | `act365 cardholders list` |
-| Get cardholder by ID | `Act365Client.getCardholderById()` — client-side filter over the list endpoint, not the `GET /api/cardholders/{id}` endpoint | `act365 cardholders get --id` |
+| List cardholders (`GET /api/cardholder`) | `Act365Client.getCardholders()` — paginated, supports `siteid`, `enabled`, `searchString` etc. filters | `act365 cardholders list` |
+| Get cardholder by ID | `Act365Client.getCardholderById()` — client-side filter over the list endpoint, not the `GET /api/cardholder/{id}` endpoint | `act365 cardholders get --id` |
 | Get cardholder by email | `Act365Client.getCardholderByEmail()` — client-side filter over the list endpoint | `act365 cardholders get --email` |
-| Create cardholder (`POST /api/cardholders`) | `Act365Client.createCardholder()` | — |
-| Update cardholder (`PUT /api/cardholders/{id}`) | `Act365Client.updateCardholder()` | — |
+| Create cardholder (`POST /api/cardholder`) | `Act365Client.createCardholder()` | — |
+| Update cardholder (`PUT /api/cardholder`) | `Act365Client.updateCardholder()` | — |
 
-#### Event Bookings (`/api2`)
+#### Event Bookings (bindings use `/api/*` endpoints; delete uses `/api2/*`)
 
 | API | Binding | CLI |
 | --- | --- | --- |
-| List booking sites (`GET /api2/Sites`) | `Act365Client.getBookingSites()` | — |
-| List doors on a site (`GET /api2/Sites/{siteid}/Doors`) | `Act365Client.getBookingSiteDoors()` | — |
-| Create booking (`POST /api2/Bookings`) | `Act365Client.createBooking()` | — |
-| Get booking (`GET /api2/Bookings/{bookingid}`) | `Act365Client.getBooking()` | `act365 bookings get --id` |
-| List bookings for a site (`GET /api2/Sites/{siteid}/Bookings`) | `Act365Client.getBookings()` | `act365 bookings list` |
-| Delete booking (`DELETE /api2/Bookings/{bookingid}`) | `Act365Client.deleteBooking()` | `act365 bookings delete --id` / `--expired` |
+| List booking sites (`GET /api/Bookingsites`) | `Act365Client.getBookingSites()` | — |
+| List doors on a site (`GET /api/Bookingdoors?siteid={siteid}`) | `Act365Client.getBookingSiteDoors()` | — |
+| Create booking (`POST /api/Bookings`) | `Act365Client.createBooking()` | — |
+| Get booking (`GET /api/Bookings?siteid={siteid}&bookingID={bookingid}`) | `Act365Client.getBooking()` | `act365 bookings get --id` |
+| List bookings for a site (`GET /api/getbookings?siteid={siteid}&date={dd/MM/YYYY}`) | `Act365Client.getBookings()` | `act365 bookings list` |
+| Delete booking (`DELETE /api2/Bookings?bookingID={bookingid}`) | `Act365Client.deleteBooking()` | `act365 bookings delete --id` / `--expired` |
 
 `Act365Client` also exposes raw `post()` / `put()` / `delete()` passthroughs for
 endpoints without dedicated bindings.

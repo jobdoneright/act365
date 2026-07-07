@@ -2,14 +2,15 @@
 
 Minimal httpx based client for the [ACT365](https://www.act365.eu/) API.
 
-API documentation: https://act365api.docs.apiary.io/#
+API documentation: <https://act365api.docs.apiary.io/#>
 
-Published pn PyPI: https://pypi.org/project/act365/
+Published on PyPI: <https://pypi.org/project/act365/>
 
 ## API Coverage
 
-The ACT365 API is much larger than what this library currently binds. The tables
-below map the API surface to the Python bindings in `Act365Client` /
+The ACT365 API is much larger than what this library currently binds. A summary
+of the full API is kept in [docs/ACT365-API-Spec.md](docs/ACT365-API-Spec.md);
+the tables below map that API surface to the Python bindings in `Act365Client` /
 `Act365Auth` and the `act365` CLI.
 
 ### Covered

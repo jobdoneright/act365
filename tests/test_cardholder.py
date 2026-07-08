@@ -99,6 +99,12 @@ def test_cardholder_requires_siteid():
         CardHolder({"CustomerID": 5622, "Groups": [27470]})
 
 
+def test_cardholder_allows_allsites_siteid():
+    # SiteID 0 = all-sites/global cardholder; must be accepted, not rejected.
+    ch = CardHolder({"SiteID": 0, "CustomerID": 5622, "Groups": [27470]})
+    assert ch.SiteID == 0
+
+
 def test_cardholder_requires_customerid():
     with pytest.raises(ValueError, match="CustomerID"):
         CardHolder({"SiteID": 8539, "Groups": [27470]})

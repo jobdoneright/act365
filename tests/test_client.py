@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime, timedelta
 from random import randint
@@ -42,6 +43,37 @@ def act365_client():
     username = os.getenv("ACT365_USERNAME")
     password = os.getenv("ACT365_PASSWORD")
     return Act365Client(username=username, password=password, siteid=8539)
+
+
+class _FakeResponse:
+    status_code = 200
+
+    def __init__(self, payload):
+        self.text = json.dumps(payload)
+
+
+def test_get_cardholders_preserves_true_siteid(monkeypatch):
+    # ACT365's list endpoint returns SiteID 0 for all-sites/global cardholders.
+    # getCardholders must return that 0 unchanged, not rewrite it to the
+    # client's own site (8539) — doing so corrupts global cardholders and makes
+    # a later update look like a rejected cross-site move.
+    client = Act365Client(username="u", password="p", siteid=8539)
+    pages = [
+        [
+            {"CardHolderID": 1, "CustomerID": 5622, "SiteID": 0, "Groups": [1]},
+            {"CardHolderID": 2, "CustomerID": 5622, "SiteID": 9000, "Groups": [1]},
+        ],
+        [],
+    ]
+    calls = iter(pages)
+    monkeypatch.setattr(
+        client.client, "get", lambda *a, **k: _FakeResponse(next(calls))
+    )
+
+    holders = {ch.CardHolderID: ch for ch in client.getCardholders()}
+
+    assert holders[1].SiteID == 0
+    assert holders[2].SiteID == 9000
 
 
 @pytest.mark.skipif(

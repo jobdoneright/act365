@@ -65,7 +65,12 @@ class CardHolder(object):
         merged = dict(list(empty.items()) + list(dictionary.items()))
         for key in merged:
             setattr(self, key, merged[key])
-        if not self.SiteID:
+        # SiteID 0 is a legitimate value: an "all-sites" (global) cardholder.
+        # Only a genuinely absent SiteID (None) is invalid. Treating 0 as
+        # missing here is what forced callers to patch it to a specific site,
+        # which corrupts global cardholders on write-back (ACT365 then rejects
+        # the implied cross-site move).
+        if self.SiteID is None:
             raise ValueError("CardHolder SiteID is required")
         if not self.CustomerID:
             raise ValueError("CardHolder CustomerID is required")

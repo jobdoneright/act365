@@ -55,8 +55,10 @@ class Act365Client:
 
                 for ch in cardholders:
                     try:
-                        if ch.get("SiteID") == 0 or ch.get("SiteID") is None:
-                            ch["SiteID"] = self.siteid
+                        # Preserve the cardholder's true SiteID as returned by
+                        # ACT365 (0 = all-sites/global). Do NOT rewrite it to
+                        # this client's site — that corrupts global cardholders
+                        # and makes a later update look like a cross-site move.
                         self._CardHolders.append(CardHolder(ch))
                     except ValueError as e:
                         LOG.warning(

@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.6.0](https://github.com/jobdoneright/act365/compare/v1.5.0...v1.6.0) (2026-07-08)
+
+
+### Features
+
+* add --sort-by option to cardholders list CLI ([#46](https://github.com/jobdoneright/act365/issues/46)) ([f4b76e6](https://github.com/jobdoneright/act365/commit/f4b76e6f4ac35a4d6c88dd6053fb6458b1a77b95))
+
+
+### Bug Fixes
+
+* preserve true SiteID (0 = all-sites) instead of patching it ([#48](https://github.com/jobdoneright/act365/issues/48)) ([56f0d9f](https://github.com/jobdoneright/act365/commit/56f0d9feb57102461c0d2682bf8c4fa3e00a2461))
+
+
+### Documentation
+
+* Add ACT365 api coverage to README.md ([#44](https://github.com/jobdoneright/act365/issues/44)) ([f30bf10](https://github.com/jobdoneright/act365/commit/f30bf10ea1ce2ecbfc09d717135f9a124dd3fff5))
+
 ## [1.5.0](https://github.com/jobdoneright/act365/compare/v1.4.0...v1.5.0) (2026-07-06)
 
 

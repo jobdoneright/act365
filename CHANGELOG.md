@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/jobdoneright/act365/compare/v1.6.0...v1.7.0) (2026-07-09)
+
+
+### Features
+
+* add server-side getCardholder(id) via GET /cardholder/{id} ([#49](https://github.com/jobdoneright/act365/issues/49)) ([283a5d1](https://github.com/jobdoneright/act365/commit/283a5d19199c1f573c0202a941134bfec10d5c06))
+
 ## [1.6.0](https://github.com/jobdoneright/act365/compare/v1.5.0...v1.6.0) (2026-07-08)
 
 

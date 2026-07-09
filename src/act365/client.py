@@ -68,6 +68,33 @@ class Act365Client:
 
         return self._CardHolders
 
+    def getCardholder(self, id):
+        """Fetch a single cardholder by ID via GET /cardholder/{id}.
+
+        A server-side lookup — no full paged walk of the directory — so callers
+        that already know the CardHolderID pay one request, not one per 100
+        cardholders. Returns a CardHolder, or None if the id is unknown (404) or
+        the response is not a single cardholder object.
+        """
+        response = self.client.get(f"{self.url}/cardholder/{id}")
+        if response.status_code != httpx.codes.OK:
+            return None
+        try:
+            ch = json.loads(response.text)
+        except json.JSONDecodeError:
+            return None
+        # The endpoint may answer an unknown id with an empty body or a list.
+        if not isinstance(ch, dict) or not ch:
+            return None
+        # Mirror getCardholders: SiteID 0 / missing means the querying site.
+        if ch.get("SiteID") == 0 or ch.get("SiteID") is None:
+            ch["SiteID"] = self.siteid
+        try:
+            return CardHolder(ch)
+        except ValueError as e:
+            LOG.warning(f"Skipping cardholder {ch.get('CardHolderID')}: {e}")
+            return None
+
     def getCardholderByEmail(self, email):
         self.getCardholders()
         for ch in self._CardHolders:
@@ -75,10 +102,10 @@ class Act365Client:
                 return ch
 
     def getCardholderById(self, id):
-        self.getCardholders()
-        for ch in self._CardHolders:
-            if ch.CardHolderID == id:
-                return ch
+        # Prefer the server-side single-cardholder endpoint (one request); the
+        # ACT365 API has no by-email equivalent, so getCardholderByEmail still
+        # walks the full directory.
+        return self.getCardholder(id)
 
     def createCardholder(self, cardholder: CardHolder | dict) -> int | None:
         if isinstance(cardholder, dict):

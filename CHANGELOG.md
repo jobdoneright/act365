@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/jobdoneright/act365/compare/v1.7.0...v1.7.1) (2026-07-13)
+
+
+### Bug Fixes
+
+* getCardholder(id) must preserve all-sites SiteID (0), like getCardholders ([#51](https://github.com/jobdoneright/act365/issues/51)) ([e07782e](https://github.com/jobdoneright/act365/commit/e07782ed2de4a5b6a4352b8ff1f1d6667291a9a2))
+
 ## [1.7.0](https://github.com/jobdoneright/act365/compare/v1.6.0...v1.7.0) (2026-07-09)
 
 

@@ -74,9 +74,10 @@ def test_get_cardholder_not_found_returns_none(login, httpx_mock):
     assert _client().getCardholder(999) is None
 
 
-def test_get_cardholder_siteid_zero_normalised_to_query_site(login, httpx_mock):
-    # An all-sites (SiteID 0) cardholder: CardHolder() rejects a falsy SiteID, so
-    # the fetch must normalise 0 to the querying site (mirrors getCardholders).
+def test_get_cardholder_preserves_allsites_siteid(login, httpx_mock):
+    # An all-sites (SiteID 0) cardholder must keep SiteID 0, mirroring
+    # getCardholders. Rewriting it to the querying site makes a later
+    # updateCardholder look like a cross-site move, which ACT365 rejects.
     httpx_mock.add_response(
         method="GET", url=f"{BASE}/cardholder/123", json=_cardholder(SiteID=0)
     )
@@ -84,7 +85,22 @@ def test_get_cardholder_siteid_zero_normalised_to_query_site(login, httpx_mock):
     ch = _client().getCardholder(123)
 
     assert ch is not None
-    assert ch.SiteID == 8539
+    assert ch.SiteID == 0
+
+
+def test_get_cardholder_round_trips_pin(login, httpx_mock):
+    # ACT365 returns the stored PIN on GET, and a PUT with an empty/absent PIN
+    # clears it — so the fetched object must carry the PIN through to dict()
+    # for a safe fetch-modify-write update.
+    httpx_mock.add_response(
+        method="GET", url=f"{BASE}/cardholder/123", json=_cardholder(PIN="4321")
+    )
+
+    ch = _client().getCardholder(123)
+
+    assert ch is not None
+    assert ch.PIN == "4321"
+    assert ch.dict()["PIN"] == "4321"
 
 
 def test_get_cardholder_empty_body_returns_none(login, httpx_mock):

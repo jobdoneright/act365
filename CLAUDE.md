@@ -65,6 +65,8 @@ API documentation: https://act365api.docs.apiary.io/#
 - Date format throughout: `DD/MM/YYYY HH:MM` (defined as `STRPTIME_FMT` in `booking.py`)
 - The ACT365 API returns `DoorID` (singular int) when a booking has only one door, and `DoorIDs` (list) otherwise — the `Booking` dataclass handles this via `InitVar[DoorID]`
 - `deleteBooking` posts to `url + "2/Bookings"` (note the "2" suffix — this is intentional)
+- Cardholder `PIN` (verified against the live API, July 2026): both `GET /cardholder` (list) and `GET /cardholder/{id}` return the stored PIN in cleartext. `PUT /cardholder` replaces the whole record — sending `PIN: ""` **or omitting the PIN key** silently clears the stored PIN (`Success: true`, no rejection). There is no "leave PIN unchanged" at the API level; the only safe update pattern is fetch-modify-write (round-trip the GET response through the PUT).
+- Cardholder `SiteID` 0 means all-sites/global. Never rewrite it to a specific site — ACT365 rejects the resulting update as a cross-site move.
 
 ## Release Process
 

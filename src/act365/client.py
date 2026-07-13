@@ -77,6 +77,9 @@ class Act365Client:
         that already know the CardHolderID pay one request, not one per 100
         cardholders. Returns a CardHolder, or None if the id is unknown (404) or
         the response is not a single cardholder object.
+
+        The SiteID comes back exactly as ACT365 stores it (0 = all-sites), so
+        the returned object is safe to mutate and pass to updateCardholder.
         """
         response = self.client.get(f"{self.url}/cardholder/{id}")
         if response.status_code != httpx.codes.OK:
@@ -88,9 +91,10 @@ class Act365Client:
         # The endpoint may answer an unknown id with an empty body or a list.
         if not isinstance(ch, dict) or not ch:
             return None
-        # Mirror getCardholders: SiteID 0 / missing means the querying site.
-        if ch.get("SiteID") == 0 or ch.get("SiteID") is None:
-            ch["SiteID"] = self.siteid
+        # Preserve the cardholder's true SiteID as returned by ACT365
+        # (0 = all-sites/global), matching getCardholders. Rewriting 0 to
+        # this client's site makes a later update look like a cross-site
+        # move, which ACT365 rejects.
         try:
             return CardHolder(ch)
         except ValueError as e:
@@ -129,6 +133,18 @@ class Act365Client:
         return None
 
     def updateCardholder(self, cardholder: CardHolder | dict) -> bool:
+        """Update a cardholder via PUT /cardholder.
+
+        Returns True on success; raises ValueError with the API's ErrorMsg on
+        any failure.
+
+        PIN semantics (verified against the live API): the PUT replaces the
+        whole record. Sending PIN as "" — or omitting the key entirely —
+        CLEARS any stored PIN; ACT365 does not treat an absent PIN as "leave
+        unchanged" and does not reject empty-PIN updates. To preserve the PIN,
+        fetch the cardholder first (GET returns the stored PIN), mutate the
+        returned object, and pass it back here.
+        """
         if isinstance(cardholder, dict):
             data = cardholder
         elif isinstance(cardholder, CardHolder):

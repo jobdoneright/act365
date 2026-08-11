@@ -66,8 +66,10 @@ def test_get_cardholders_preserves_true_siteid(monkeypatch):
         [],
     ]
     calls = iter(pages)
+    # getCardholders sends its GETs via client.request (through the timeout
+    # retry helper), so that is the interception point.
     monkeypatch.setattr(
-        client.client, "get", lambda *a, **k: _FakeResponse(next(calls))
+        client.client, "request", lambda *a, **k: _FakeResponse(next(calls))
     )
 
     holders = {ch.CardHolderID: ch for ch in client.getCardholders()}

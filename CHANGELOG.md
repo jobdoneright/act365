@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/jobdoneright/act365/compare/v1.7.1...v1.8.0) (2026-08-11)
+
+
+### Features
+
+* generous timeouts, retry idempotent requests on timeout, typed auth errors ([#53](https://github.com/jobdoneright/act365/issues/53)) ([ad5c14a](https://github.com/jobdoneright/act365/commit/ad5c14a40b24dabab5946b7eb1d0ac28d6da6c3e))
+
 ## [1.7.1](https://github.com/jobdoneright/act365/compare/v1.7.0...v1.7.1) (2026-07-13)
 
 

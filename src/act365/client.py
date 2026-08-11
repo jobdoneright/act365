@@ -60,15 +60,19 @@ class Act365Client:
         self._CardHolders = list()
 
     def _request_with_retry(self, method, url, **kwargs):
-        """Send a request, retrying once on timeout.
+        """Send a request, retrying once on a read timeout.
 
         Only for idempotent requests (GETs and the full-overwrite cardholder
         PUT): a timed-out request may still have been applied server-side, so
         a non-idempotent POST must not go through here.
+
+        Only ReadTimeout is retried — the slow-backend failure this exists
+        for. Connect timeouts are already retried by the transport and must
+        otherwise fail fast; write/pool timeouts surface immediately.
         """
         try:
             return self.client.request(method, url, **kwargs)
-        except httpx.TimeoutException:
+        except httpx.ReadTimeout:
             LOG.warning(f"{method} {url} timed out; retrying once")
             sleep(RETRY_SLEEP_SECONDS)
             return self.client.request(method, url, **kwargs)

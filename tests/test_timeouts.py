@@ -93,6 +93,24 @@ def test_get_cardholder_raises_after_second_timeout(login, httpx_mock, no_retry_
         _client().getCardholder(123)
 
 
+def test_connect_timeout_is_not_retried_by_the_helper(
+    login, httpx_mock, no_retry_sleep
+):
+    # Connect timeouts are the transport's job (HTTPTransport(retries=2)) and
+    # must otherwise fail fast — the helper retries only read timeouts.
+    httpx_mock.add_exception(
+        httpx.ConnectTimeout("connect timed out"),
+        method="GET",
+        url=f"{BASE}/cardholder/123",
+    )
+
+    with pytest.raises(httpx.ConnectTimeout):
+        _client().getCardholder(123)
+
+    gets = [r for r in httpx_mock.get_requests() if r.method == "GET"]
+    assert len(gets) == 1
+
+
 def test_update_cardholder_retries_once_on_timeout(login, httpx_mock, no_retry_sleep):
     httpx_mock.add_exception(
         httpx.ReadTimeout("timed out"), method="PUT", url=f"{BASE}/cardholder"

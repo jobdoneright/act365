@@ -15,18 +15,67 @@ logging.basicConfig(
 )
 LOG = logging.getLogger(__name__)
 
+# ACT365's Azure backend can be very slow (logins of 15s+ observed overnight),
+# so the read timeout must be generous; httpx's 5s default caused nightly
+# ReadTimeouts in production. Connect stays tighter — an unreachable host
+# should fail fast.
+DEFAULT_TIMEOUT = httpx.Timeout(30.0, connect=10.0)
+
+# Pause before the single retry of a timed-out idempotent request, giving a
+# briefly-overloaded backend a moment to recover.
+RETRY_SLEEP_SECONDS = 2
+
+
+class Act365Error(Exception):
+    """Base class for ACT365 client errors."""
+
+
+class Act365AuthError(Act365Error):
+    """Raised when ACT365 login fails or credentials are missing."""
+
 
 class Act365Client:
-    def __init__(self, username, password, siteid, url="https://userapi.act365.eu/api"):
+    def __init__(
+        self,
+        username,
+        password,
+        siteid,
+        url="https://userapi.act365.eu/api",
+        timeout=None,
+    ):
         self.username = username
         self.password = password
         self.siteid = siteid
         self.url = url
 
         self.auth = Act365Auth(username, password, url=url)
-        self.client = httpx.Client(auth=self.auth)
+        self.client = httpx.Client(
+            auth=self.auth,
+            timeout=timeout if timeout is not None else DEFAULT_TIMEOUT,
+            # Transport-level retries cover connection failures only (never a
+            # request that reached the server), so they are safe for all verbs.
+            transport=httpx.HTTPTransport(retries=2),
+        )
 
         self._CardHolders = list()
+
+    def _request_with_retry(self, method, url, **kwargs):
+        """Send a request, retrying once on a read timeout.
+
+        Only for idempotent requests (GETs and the full-overwrite cardholder
+        PUT): a timed-out request may still have been applied server-side, so
+        a non-idempotent POST must not go through here.
+
+        Only ReadTimeout is retried — the slow-backend failure this exists
+        for. Connect timeouts are already retried by the transport and must
+        otherwise fail fast; write/pool timeouts surface immediately.
+        """
+        try:
+            return self.client.request(method, url, **kwargs)
+        except httpx.ReadTimeout:
+            LOG.warning(f"{method} {url} timed out; retrying once")
+            sleep(RETRY_SLEEP_SECONDS)
+            return self.client.request(method, url, **kwargs)
 
     def getCardholders(self, params={}):
         # ?customerid={customerid}
@@ -45,7 +94,9 @@ class Act365Client:
         more_to_get = True
         while more_to_get:
             params["skipover"] = len(self._CardHolders)
-            response = self.client.get(self.url + "/cardholder", params=params)
+            response = self._request_with_retry(
+                "GET", self.url + "/cardholder", params=params
+            )
 
             if response.status_code == httpx.codes.OK:
                 cardholders = json.loads(response.text)
@@ -81,7 +132,7 @@ class Act365Client:
         The SiteID comes back exactly as ACT365 stores it (0 = all-sites), so
         the returned object is safe to mutate and pass to updateCardholder.
         """
-        response = self.client.get(f"{self.url}/cardholder/{id}")
+        response = self._request_with_retry("GET", f"{self.url}/cardholder/{id}")
         if response.status_code != httpx.codes.OK:
             return None
         try:
@@ -152,7 +203,8 @@ class Act365Client:
         else:
             raise TypeError("cardholder must be a CardHolder object or a dictionary")
 
-        response = self.client.put(self.url + "/cardholder", json=data)
+        # A full-overwrite PUT is idempotent, so a timeout retry is safe.
+        response = self._request_with_retry("PUT", self.url + "/cardholder", json=data)
         LOG.debug(f"updateCardholder response: {response.status_code} {response.text}")
         if response.status_code == httpx.codes.OK and response.json().get(
             "Success", False
@@ -170,7 +222,9 @@ class Act365Client:
         more_to_get = True
         while more_to_get:
             params["skipover"] = len(sites)
-            response = self.client.get(self.url + "/Bookingsites", params=params)
+            response = self._request_with_retry(
+                "GET", self.url + "/Bookingsites", params=params
+            )
 
             if response.status_code == httpx.codes.OK:
                 _sites = json.loads(response.text)
@@ -187,8 +241,8 @@ class Act365Client:
         return sites
 
     def getBookingSiteDoors(self, siteid):
-        response = self.client.get(
-            self.url + "/Bookingdoors", params={"siteid": siteid}
+        response = self._request_with_retry(
+            "GET", self.url + "/Bookingdoors", params={"siteid": siteid}
         )
 
         if response.status_code == httpx.codes.OK:
@@ -208,8 +262,8 @@ class Act365Client:
         return response
 
     def getBooking(self, siteid, id):
-        response = self.client.get(
-            self.url + "/Bookings", params={"siteid": siteid, "bookingID": id}
+        response = self._request_with_retry(
+            "GET", self.url + "/Bookings", params={"siteid": siteid, "bookingID": id}
         )
         LOG.debug(f"Response: {response.status_code} {response.text}")
         if response.text == "null" or response.status_code != httpx.codes.OK:
@@ -245,7 +299,7 @@ class Act365Client:
         more_to_get = True
         while more_to_get:
             params["skipover"] = len(results)
-            response = self.client.get(self.url + path, params=params)
+            response = self._request_with_retry("GET", self.url + path, params=params)
 
             if response.status_code == httpx.codes.OK:
                 rs = json.loads(response.text)
@@ -283,7 +337,7 @@ class Act365Auth(httpx.Auth):
     ):
 
         if username is None or password is None:
-            raise Exception
+            raise Act365AuthError("ACT365 username and password are required")
         self.username = username
         self.password = password
         self.grant_type = grant_type
@@ -322,7 +376,9 @@ class Act365Auth(httpx.Auth):
             elif response.status_code == httpx.codes.TOO_MANY_REQUESTS:
                 sleep(65)
             else:
-                raise Exception
+                raise Act365AuthError(
+                    f"ACT365 login failed: {response.status_code} {response.text}"
+                )
 
     def auth_flow(self, request):
         if self.access_token is None:

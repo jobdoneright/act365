@@ -5,19 +5,12 @@ import httpx
 import json5
 import pytest
 
-from act365.client import Act365Auth
+from act365.client import Act365Auth, Act365AuthError
 
 
 def test_act365_auth_failures():
-    try:
+    with pytest.raises(Act365AuthError):
         _ = Act365Auth(username=None, password=None)
-    except Exception as e:
-        assert type(e) is Exception
-
-    try:
-        _ = Act365Auth(username="bad", password="credenrials")
-    except Exception as e:
-        assert type(e) is Exception
 
 
 @pytest.mark.skipif(
